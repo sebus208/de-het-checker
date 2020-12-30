@@ -9,8 +9,12 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "natural": "^2.4.0",
+    "tiny-worker": "^2.3.0",
+    "tokenizer": "^1.1.2",
     "vue": "^2.6.11",
-    "vuetify": "^2.3.16"
+    "vuetify": "^2.3.16",
+    "wink-tokenizer": "^5.2.3"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

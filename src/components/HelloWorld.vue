@@ -1,25 +1,14 @@
 <template>
   <v-container>
     <v-row class="text-center">
-
       <v-col class="mb-4">
+        <v-skeleton-loader v-if="loading" :loading="loading" v-bind="attrs" transition="scale-transition"></v-skeleton-loader>
 
+        <v-textarea v-show="loaded" v-bind="attrtxt" transition="scale-transition" v-model="attrtxt.textValue"></v-textarea>
 
-        <v-skeleton-loader
-          v-if="loading"
-          :loading="loading"
-          v-bind="attrs"
-          transition="scale-transition"
-        ></v-skeleton-loader>
-        
-        <v-textarea
-        v-show="loaded"
-        v-bind="attrtxt"
-        transition="scale-transition"
-        v-model=attrtxt.textValue
-        ></v-textarea>
-
-        <p>{{ attrtxt.textValue }}</p>
+        <!-- TODO this should be it's own component. -->
+        <!-- For now let's just fill this in with the following text. We still need to work the text and output it nicely. -->
+        <p>{{ attrtxt.textValue == '' ? '' :  winkTokenize(attrtxt.textValue) }}</p>
 
       </v-col>
     </v-row>
@@ -27,62 +16,83 @@
 </template>
 
 <script>
-  export default {
-    name: 'HelloWorld',
+// Imports
+const WinkTokenizer = require('wink-tokenizer');
+const wink = new WinkTokenizer(); // we'll be using the tokenize method on this one later.
 
-    data: () => ({
+export default {
+  name: 'HelloWorld',
+
+  data: () => ({
+
+    // For skeleton loaders
+    loading: true,
+    loaded: false,
+
+    // TextContent
+    textContent: '',
+
+    // styling, TODO should this be here?
+    attrs: {
+      elevation: 2,
+      class: 'mx-auto',
+      maxWidth: 500,
       loading: true,
-      loaded: false,
+      type: 'article',
+      // transition: "scale-transition"
+    },
 
-      textContent: '',
+    // Styling for the text, should this be here?
+    attrtxt: {
+      textValue: "Dit boek is het enige dat de brand heeft overleefd.",
+      class: 'mx-auto',
+      autoFocus: true,
+      autoGrow: true,
+      clearable: true,
+      counter: true,
+      elevation: 1,
+      hideDetails: true,
+      rounded: false,
+      outlined: true,
+      noResize: true,
+    },
+  }), // data
 
-      attrs: {
-        elevation: 2,
-        class: "mx-auto",
-        "max-width": 500,
-        loading: true,
-        type: "article",
-        // transition: "scale-transition"
-      },
+  methods: {
+    /**
+     * this method returns an array of each word or punctuation mark of the inputted sentence.
+     * 
+     * Input: Hoi! hoe gaat het?
+     * Output: [ { "value": "Hoi", "tag": "word" }, { "value": "!", "tag": "punctuation" }, 
+     *            { "value": "hoe", "tag": "word" }, { "value": "gaat", "tag": "word" }, 
+     *          { "value": "het", "tag": "word" }, { "value": "?", "tag": "punctuation" } ]
+     */
+    winkTokenize: function (value) {
+      return wink.tokenize(value);
+    },
+  }, // methods
 
-      attrtxt: {
-        textValue: '',
-        class: "mx-auto",
-        "auto-focus": true,
-        "auto-grow": true,
-        clearable: true,
-        counter: true,
-        elevation: 1,
-        "hide-details": true,
-        rounded: false,
-        outlined: true,
-        "no-resize": true,
-        
-      },
+  // This is for the skeleton loader, but it's stupid.
+  // It doesn't properly wait for the data to load, it just waits a second before loading the actual text box.
+  created: function () {
+    const readyHandler = () => {
+      if (document.readyState == 'complete') {
+        setTimeout(() => {
+          this.loading = false;
+          this.loaded = true;
+          document.removeEventListener('readystatechange', readyHandler);
+        }, 100);
+      }
+    };
 
+    document.addEventListener('readystatechange', readyHandler);
 
-    }),
-
-    created: function() {
-      const readyHandler = () => {
-        if(document.readyState == 'complete'){
-          setTimeout(() => {
-            this.loading = false;
-            this.loaded = true;
-            document.removeEventListener('readystatechange', readyHandler);
-          }, 1000)
-        }
-      };
-
-      document.addEventListener('readystatechange', readyHandler);
-
-      readyHandler();
-    }
-
-  }
+    readyHandler();
+  }, // created
+};
 </script>
 
 <style lang="sass">
 $skeleton-loader-loading-animation: loading 2.5s infinite !default
-
-</style>>
+</style>
+>
