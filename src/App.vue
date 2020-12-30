@@ -57,12 +57,14 @@
 
 <script>
 import HelloWorld from './components/HelloWorld';
+// import Output from './components/Output';
 
 export default {
   name: 'App',
 
   components: {
     HelloWorld,
+    // Output
   },
 
   data: () => ({
